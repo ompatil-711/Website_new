@@ -1,0 +1,27 @@
+/* Motion owns card transforms; CSS handles light, borders, and child accents. */
+.motion-card { position: relative; isolation: isolate; transition: border-color .25s, box-shadow .25s; }
+.motion-card:hover, .motion-card:focus-within { translate: none; }
+.card-spotlight { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .4s; z-index: -1; }
+.motion-card:hover .card-spotlight, .motion-card:focus-within .card-spotlight { opacity: 1; }
+.product-card.motion-card::after { display: none; }
+.motion-card .product-icon, .motion-card .service-icon, .motion-card .founder-icon { transition: transform .4s cubic-bezier(.22,1,.36,1), border-color .3s, background .3s; }
+.motion-card:hover .product-icon, .motion-card:focus-within .product-icon { transform: translateY(-3px) rotate(-5deg); background: rgba(158, 123, 40, 0.12); border-color: var(--gold); }
+.motion-card:hover .service-icon { transform: rotate(6deg); }
+.motion-card .product-arrow svg { transition: transform .3s cubic-bezier(.22,1,.36,1); }
+.motion-card:hover .product-arrow svg, .motion-card:focus-within .product-arrow svg { transform: translateX(5px); }
+.motion-card .product-num { transition: color .3s; }
+.why-feature.motion-card { border-radius: 10px; }
+.why-feature.motion-card:hover { padding-left: 0; }
+.btn-primary, .btn-secondary, .form-submit, .social-btn, .nav-cta { transition: background .25s, color .25s, border-color .25s, box-shadow .25s; }
+.btn-primary:hover, .form-submit:hover { box-shadow: 0 8px 32px rgba(158, 123, 40, 0.25); }
+.form-submit:active, .social-btn:active { scale: .97; }
+.timeline-content { transition: border-color .3s, box-shadow .3s; }
+.timeline-item:hover .timeline-content { border-color: rgba(158, 123, 40, 0.4); box-shadow: 0 10px 30px rgba(158, 123, 40, 0.08); }
+.timeline-dot { transition: box-shadow .4s; }
+.timeline-item:hover .timeline-dot { box-shadow: 0 0 0 12px rgba(158, 123, 40, 0.1), 0 0 30px rgba(158, 123, 40, 0.15); }
+@media (hover: none) { .card-spotlight { display: none; } }
+
+html[data-motion="reduced"] .motion-card, html[data-motion="reduced"] .motion-card:hover, html[data-motion="reduced"] .motion-card:focus-within { transform: none !important; opacity: 1 !important; }
+html[data-motion="reduced"] .motion-card .product-icon, html[data-motion="reduced"] .motion-card .service-icon, html[data-motion="reduced"] .motion-card .founder-icon, html[data-motion="reduced"] .motion-card .product-arrow svg { transform: none !important; }
+html[data-motion="reduced"] .form-submit:active, html[data-motion="reduced"] .social-btn:active { scale: 1; }
+

@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useSiteReducedMotion } from './MotionPreferences';
 import ProductVisual from './ProductVisual';
+import BoardPlayground from './BoardPlayground';
 import Counter from './Counter';
 
 const stats = [['Years of experience', new Date().getFullYear() - 2001, '+'], ['Product categories', 10, '+'], ['Institutions served', 500, '+'], ['Generations of trust', 2, '']];
@@ -27,15 +28,9 @@ export default function ModernHero() {
         <motion.div className="hero-audiences" {...enter(.36)}><span>MADE FOR</span><strong>Education</strong><i /><strong>Workplaces</strong><i /><strong>Institutions</strong></motion.div>
       </div>
       <motion.div className="hero-mosaic" style={{ y: reduced ? 0 : visualY }} {...enter(.15)}>
-        <a className="mosaic-main" href="#products">
-          <div className="mosaic-label"><span>THE PARADISE COLLECTION</span><span>01 — 10</span></div>
-          <div className="mosaic-heading">Room for<br /><strong>your next big idea.</strong><span aria-hidden="true">↗</span></div>
-          <motion.div className="hero-board-render" animate={reduced ? {} : { y: [0, -7, 0], rotate: [-2, 0, -2] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}><ProductVisual type={0} decorative /></motion.div>
-          <div className="mosaic-foot"><span>Writing & display boards</span><span className="mosaic-pill">EXPLORE ↗</span></div>
-        </a>
+        <BoardPlayground />
         <a className="mosaic-small mosaic-furniture" href="#products"><div><span>BUILT FOR EVERY DAY</span><h2>Better places<br />to learn.</h2></div><ProductVisual type={2} decorative /><span className="mosaic-small-link">School furniture <b>↗</b></span></a>
         <a className="mosaic-small mosaic-digital" href="#products"><div><span>THINK FORWARD</span><h2>Make learning<br />interactive.</h2></div><ProductVisual type={5} decorative /><span className="mosaic-small-link">Digital solutions <b>↗</b></span></a>
-        <div className="mosaic-seal"><span>↗</span><strong>One partner.<br />Every possibility.</strong></div>
       </motion.div>
     </div>
     <motion.div className="hero-stats" {...enter(.4)}>{stats.map(([label, value, suffix]) => <div className="hero-stat" key={label}><div className="hero-stat-num"><Counter target={value} /><sup>{suffix}</sup></div><div className="hero-stat-label">{label}</div></div>)}</motion.div>

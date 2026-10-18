@@ -1,6 +1,9 @@
 import MotionCard from './MotionCard';
+import { motion } from 'framer-motion';
+import { useSiteReducedMotion } from './MotionPreferences';
 
 export default function WhyChooseUs() {
+  const reduced = useSiteReducedMotion();
   return (<>
 
 <section id="why">
@@ -9,6 +12,7 @@ export default function WhyChooseUs() {
       <div className="why-left reveal-left">
         <div className="section-label"><span></span><p>Why Paradise</p></div>
         <h2 className="section-title">Experience you can <em>build on.</em></h2>
+        <svg className="board-marker-underline" viewBox="0 0 240 20" fill="none" aria-hidden="true"><motion.path d="M5 9Q102 0 232 8M21 16Q120 9 211 14" stroke="#ff6a3d" strokeWidth="4" strokeLinecap="round" initial={reduced ? false : { pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true, amount: 1 }} transition={{ duration: .85, delay: .3 }} /></svg>
         <p className="body">We don't just sell products — we build partnerships. Every client relationship is built on our core values of quality, reliability, and after-sales commitment that has defined us for over two decades.</p>
         <a href="#contact" className="btn-primary" style={{"display": "inline-block"}}><span>Get in Touch</span></a>
       </div>

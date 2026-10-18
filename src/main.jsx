@@ -4,5 +4,6 @@ import App from './App';
 import MotionPreferences from './components/MotionPreferences';
 import './styles/professional.css';
 import './styles/expressive.css';
+import './styles/boards.css';
 
 createRoot(document.getElementById('root')).render(<React.StrictMode><MotionPreferences><App /></MotionPreferences></React.StrictMode>);

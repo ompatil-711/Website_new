@@ -5,7 +5,13 @@ import { Icon, QuantityControl } from './StoreApp';
 
 async function api(path, options) {
   const response = await fetch(path, { credentials: 'same-origin', ...options, headers: { 'Content-Type': 'application/json', ...options?.headers } });
-  const data = await response.json();
+  let data;
+  const text = await response.text();
+  try {
+    data = JSON.parse(text || '{}');
+  } catch {
+    throw new Error(response.status === 404 ? 'The server endpoint could not be found (404).' : `Server error (${response.status}). Please try again later.`);
+  }
   if (!response.ok) throw new Error(data.error || 'Please try again.');
   return data;
 }

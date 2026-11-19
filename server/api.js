@@ -1,4 +1,6 @@
-import { createHash, randomBytes, randomInt, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, randomBytes, randomInt, timingSafeEqual } from 'node:crypto';
+import { Buffer } from 'node:buffer';
+import process from 'node:process';
 import nodemailer from 'nodemailer';
 import { byId } from '../ecommerce/src/products.js';
 
@@ -13,6 +15,7 @@ const clean = (value, limit) => typeof value === 'string' ? value.trim().slice(0
 const emailOkay = value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= 254;
 const html = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 const digest = value => createHash('sha256').update(value).digest();
+
 const configured = () => {
   if (!process.env.SMTP_APP_PASSWORD) {
     try { process.loadEnvFile('.env'); } catch { /* Ignore */ }
@@ -25,6 +28,47 @@ function mailer() {
     try { process.loadEnvFile('.env'); } catch { /* Ignore */ }
   }
   return nodemailer.createTransport({ host: 'smtp.gmail.com', port: 465, secure: true, auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_APP_PASSWORD } });
+}
+
+const getSecret = () => process.env.SESSION_SECRET || process.env.SMTP_APP_PASSWORD || 'paradise-secret-salt';
+
+function signOtpToken(email, name, otp, expires) {
+  const hmac = createHmac('sha256', getSecret()).update(`${email}|${name}|${otp}|${expires}`).digest('hex');
+  return `${expires}.${Buffer.from(name).toString('base64url')}.${hmac}`;
+}
+
+function verifyOtpToken(token, email, otp) {
+  if (!token || typeof token !== 'string') return null;
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+  const [expiresStr, nameB64, hmac] = parts;
+  const expires = Number(expiresStr);
+  if (!Number.isFinite(expires) || Date.now() > expires) return null;
+  const name = Buffer.from(nameB64, 'base64url').toString('utf8');
+  const expectedHmac = createHmac('sha256', getSecret()).update(`${email}|${name}|${otp}|${expires}`).digest('hex');
+  if (hmac.length !== expectedHmac.length) return null;
+  if (!timingSafeEqual(Buffer.from(hmac, 'hex'), Buffer.from(expectedHmac, 'hex'))) return null;
+  return { name, email };
+}
+
+function signSessionToken(name, email, expires) {
+  const hmac = createHmac('sha256', getSecret()).update(`${name}|${email}|${expires}`).digest('hex');
+  return `${expires}.${Buffer.from(name).toString('base64url')}.${Buffer.from(email).toString('base64url')}.${hmac}`;
+}
+
+function verifySessionToken(token) {
+  if (!token || typeof token !== 'string') return null;
+  const parts = token.split('.');
+  if (parts.length !== 4) return null;
+  const [expiresStr, nameB64, emailB64, hmac] = parts;
+  const expires = Number(expiresStr);
+  if (!Number.isFinite(expires) || Date.now() > expires) return null;
+  const name = Buffer.from(nameB64, 'base64url').toString('utf8');
+  const email = Buffer.from(emailB64, 'base64url').toString('utf8');
+  const expectedHmac = createHmac('sha256', getSecret()).update(`${name}|${email}|${expires}`).digest('hex');
+  if (hmac.length !== expectedHmac.length) return null;
+  if (!timingSafeEqual(Buffer.from(hmac, 'hex'), Buffer.from(expectedHmac, 'hex'))) return null;
+  return { name, email, expires };
 }
 
 function json(res, status, body) {
@@ -48,9 +92,12 @@ function cookie(req, name) {
 
 function sessionFor(req) {
   const token = cookie(req, 'paradise_session');
-  const entry = token && sessions.get(digest(token).toString('hex'));
-  if (!entry || entry.expires < Date.now()) return null;
-  return entry;
+  if (!token) return null;
+  const memoryEntry = sessions.get(digest(token).toString('hex'));
+  if (memoryEntry && memoryEntry.expires >= Date.now()) return memoryEntry;
+  const tokenEntry = verifySessionToken(token);
+  if (tokenEntry) return tokenEntry;
+  return null;
 }
 
 function sameOrigin(req) {
@@ -59,7 +106,10 @@ function sameOrigin(req) {
   try {
     const originHost = new URL(origin).host;
     const reqHost = req.headers['x-forwarded-host'] || req.headers.host;
-    return originHost === reqHost;
+    if (!reqHost) return true;
+    if (originHost === reqHost) return true;
+    if (originHost.endsWith('.vercel.app') && reqHost.endsWith('.vercel.app')) return true;
+    return false;
   } catch { return false; }
 }
 
@@ -92,7 +142,7 @@ export async function handleApi(req, res, sendEmail = message => mailer().sendMa
 
   let data;
   try { data = await body(req); } catch { json(res, 400, { error: 'Please check your form and try again.' }); return true; }
-  const ip = req.socket.remoteAddress || 'unknown';
+  const ip = req.socket?.remoteAddress || req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
 
   if (path === '/api/auth/start') {
     const name = clean(data.name, 80);
@@ -107,6 +157,9 @@ export async function handleApi(req, res, sendEmail = message => mailer().sendMa
       await sendEmail({ from: `Paradise Enterprise <${process.env.SMTP_USER}>`, to: email, subject: 'Your Paradise Enterprise verification code', text: `Hello ${name},\n\nYour verification code is ${otp}. It expires in 10 minutes.\n\nIf you did not request this code, you can ignore this email.\n\nParadise Enterprise`, html: `<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;color:#1d2a43"><div style="background:#3158ed;color:white;padding:24px;border-radius:12px 12px 0 0"><strong style="font-size:20px">Paradise Enterprise</strong><div style="font-size:12px;margin-top:5px">BOARD STORE</div></div><div style="padding:28px;border:1px solid #e3e9f2;border-radius:0 0 12px 12px"><h1 style="font-size:23px;margin:0 0 12px">Verify your email</h1><p>Hello ${html(name)},</p><p>Use this code to continue your quote request:</p><div style="font-size:32px;font-weight:800;letter-spacing:8px;color:#3158ed;padding:14px 0">${otp}</div><p style="font-size:13px;color:#68788c">This code expires in 10 minutes. If you did not request it, ignore this email.</p></div></div>` });
     } catch (error) { console.error('OTP email failed:', error); json(res, 502, { error: 'We could not send the code right now. Please try again later.' }); return true; }
     otpChallenges.set(email, { name, hash: digest(`${salt}:${otp}`), salt, expires: Date.now() + OTP_LIFE, attempts: 0, sentAt: Date.now() });
+    const otpToken = signOtpToken(email, name, otp, Date.now() + OTP_LIFE);
+    const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
+    res.setHeader('Set-Cookie', `paradise_otp=${otpToken}; HttpOnly; SameSite=Lax; Path=/api/auth; Max-Age=${OTP_LIFE / 1000}${secure}`);
     json(res, 200, { message: 'A verification code has been sent to your email.' });
     return true;
   }
@@ -114,16 +167,32 @@ export async function handleApi(req, res, sendEmail = message => mailer().sendMa
   if (path === '/api/auth/verify') {
     const email = clean(data.email, 254).toLowerCase();
     const otp = clean(data.otp, 6);
+    let verifiedUser = null;
     const entry = otpChallenges.get(email);
-    if (!entry || !/^\d{6}$/.test(otp) || entry.expires < Date.now() || entry.attempts >= 5) { json(res, 400, { error: 'The code is invalid or has expired. Request a new one.' }); return true; }
-    entry.attempts++;
-    if (!timingSafeEqual(entry.hash, digest(`${entry.salt}:${otp}`))) { json(res, 400, { error: 'Incorrect code. Please try again.' }); return true; }
-    otpChallenges.delete(email);
-    const token = randomBytes(32).toString('hex');
-    sessions.set(digest(token).toString('hex'), { name: entry.name, email, expires: Date.now() + SESSION_LIFE });
+    if (entry && /^\d{6}$/.test(otp) && entry.expires >= Date.now() && entry.attempts < 5) {
+      entry.attempts++;
+      if (timingSafeEqual(entry.hash, digest(`${entry.salt}:${otp}`))) {
+        verifiedUser = { name: entry.name, email };
+        otpChallenges.delete(email);
+      }
+    }
+    if (!verifiedUser) {
+      const otpCookie = cookie(req, 'paradise_otp');
+      verifiedUser = verifyOtpToken(otpCookie, email, otp);
+    }
+    if (!verifiedUser) {
+      json(res, 400, { error: 'The code is invalid or has expired. Request a new one.' });
+      return true;
+    }
+    const sessionExpires = Date.now() + SESSION_LIFE;
+    const sessionToken = signSessionToken(verifiedUser.name, email, sessionExpires);
+    sessions.set(digest(sessionToken).toString('hex'), { name: verifiedUser.name, email, expires: sessionExpires });
     const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
-    res.setHeader('Set-Cookie', `paradise_session=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${SESSION_LIFE / 1000}${secure}`);
-    json(res, 200, { user: { name: entry.name, email } });
+    res.setHeader('Set-Cookie', [
+      `paradise_session=${sessionToken}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${SESSION_LIFE / 1000}${secure}`,
+      `paradise_otp=; HttpOnly; SameSite=Lax; Path=/api/auth; Max-Age=0${secure}`
+    ]);
+    json(res, 200, { user: { name: verifiedUser.name, email } });
     return true;
   }
 

@@ -1,6 +1,7 @@
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { resolve, sep } from 'node:path';
+import process from 'node:process';
 import { handleApi } from './api.js';
 
 try { process.loadEnvFile('.env'); } catch { /* Set environment variables on the server if no .env file is used. */ }

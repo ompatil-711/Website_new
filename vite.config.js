@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
+import process from 'node:process';
 import { handleApi } from './server/api.js';
 
 try { process.loadEnvFile('.env'); } catch { /* SMTP credentials are optional until configured. */ }

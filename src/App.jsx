@@ -19,6 +19,7 @@ import Footer from './components/Footer';
 import useScrollReveal from './hooks/useMotionReveal';
 import useSmoothScroll from './hooks/useSmoothScroll';
 
+
 export default function App() {
   const [interest, setInterest] = useState({ category: '' });
   const reduced = useSiteReducedMotion();

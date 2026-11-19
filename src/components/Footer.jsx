@@ -29,6 +29,7 @@ export default function Footer() {
           <a href="#products">Digital Panels</a>
           <a href="#products">Fire Systems</a>
           <a href="#products">Lab Setup</a>
+          <a href="/ecommerce/" className="footer-shop">Shop boards ↗</a>
         </div>
       </div>
       <div className="footer-col">

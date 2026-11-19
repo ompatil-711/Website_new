@@ -43,11 +43,13 @@ export default function Navigation() {
         <div className="nav-logo-emblem" aria-hidden="true" />
         <div className="nav-logo-text"><span>Paradise Enterprise</span><span>Est. 2001 · Nagpur</span></div>
       </a>
-      <ul className="nav-links">{links.slice(1).map(([id, label]) => <li key={id}><a href={'#' + id} className={id === 'contact' ? 'nav-cta' : undefined}>{label}</a></li>)}</ul>
+      <ul className="nav-links">{links.slice(1, -1).map(([id, label]) => <li key={id}><a href={'#' + id}>{label}</a></li>)}<li><a href="/ecommerce/" className="nav-shop">Shop boards <span aria-hidden="true">↗</span></a></li><li><a href="#contact" className="nav-cta">Request a Quote</a></li></ul>
+      <a href="/ecommerce/" className="nav-shop-mobile">Shop <span aria-hidden="true">↗</span></a>
       <button ref={toggle} type="button" className="nav-hamburger" aria-expanded={open} aria-controls="mobileMenu" aria-label={open ? 'Close menu' : 'Open menu'} onClick={() => setOpen(!open)}><span /><span /><span /></button>
     </nav>
     <div ref={menu} className={'mobile-menu' + (open ? ' open' : '')} id="mobileMenu" role="navigation" aria-label="Mobile navigation">
       {links.map(([id, label]) => <a key={id} href={'#' + id} onClick={() => { setOpen(false); document.getElementById(id)?.scrollIntoView(); }}>{label}</a>)}
+      <a href="/ecommerce/" className="mobile-shop" onClick={() => setOpen(false)}>Shop boards <span aria-hidden="true">↗</span></a>
     </div>
   </>;
 }

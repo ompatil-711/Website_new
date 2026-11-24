@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import BoardVisual from './BoardVisual';
-import { byId, categories, products } from './products';
+import ProductImage from './ProductImage';
+import { byId, categories, products, priceFor, startingPrice, formatPrice } from './products';
 import { Icon, QuantityControl } from './StoreApp';
 import QuoteDrawer from './QuoteDrawer';
 
@@ -11,7 +11,7 @@ const uses = ['All spaces', 'Classrooms', 'Offices', 'Institutions'];
 function readCart() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    return Array.isArray(saved) ? saved.filter(item => byId[item.id] && Number.isInteger(item.quantity) && item.quantity > 0).map(item => ({ id: item.id, quantity: Math.min(item.quantity, 99), size: typeof item.size === 'string' ? item.size.slice(0, 100) : '' })) : [];
+    return Array.isArray(saved) ? saved.filter(item => byId[item.id] && Number.isInteger(item.quantity) && item.quantity > 0).map(item => { const size = typeof item.size === 'string' ? item.size.slice(0, 100) : ''; return { id: item.id, quantity: Math.min(item.quantity, 99), size: byId[item.id].options && priceFor(item.id, size) === null ? '' : size }; }) : [];
   } catch { return []; }
 }
 
@@ -24,14 +24,14 @@ function ProductCard({ product, onOpen, onAdd }) {
   return <motion.article className="market-card" whileHover={{ y: -4 }} transition={{ duration: .18 }}>
     <button className={`market-card-image visual-${product.visual}`} onClick={() => onOpen(product.id)} aria-label={`View ${product.name}`}>
       {product.tag && <span className="market-badge">{product.tag}</span>}
-      <BoardVisual product={product} />
+      <ProductImage product={product} />
     </button>
     <div className="market-card-body">
       <span className="market-card-category">{product.category}</span>
       <button className="market-card-title" onClick={() => onOpen(product.id)}>{product.name}</button>
       <p>{product.summary}</p>
-      <div className="market-card-price"><strong>Price on request</strong><span>Custom quote</span></div>
-      <div className="market-card-actions"><button onClick={() => onAdd(product.id)} className="market-add">Add to quote <Icon name="plus" size={16} /></button><button onClick={() => onOpen(product.id)} className="market-view" aria-label={`View ${product.name} details`}>View details</button></div>
+      <div className="market-card-price">{product.options ? <><strong>From {formatPrice(startingPrice(product))}</strong><span>{product.options.length} sizes · per board</span></> : <><strong>Price on request</strong><span>Custom quote</span></>}</div>
+      <div className="market-card-actions"><button onClick={() => product.options ? onOpen(product.id) : onAdd(product.id)} className="market-add">{product.options ? 'Choose size' : 'Add to quote'} <Icon name="plus" size={16} /></button><button onClick={() => onOpen(product.id)} className="market-view" aria-label={`View ${product.name} details`}>View details</button></div>
     </div>
   </motion.article>;
 }
@@ -39,13 +39,14 @@ function ProductCard({ product, onOpen, onAdd }) {
 function ProductPage({ product, onBack, onAdd, onOpen }) {
   const [size, setSize] = useState('');
   const [quantity, setQuantity] = useState(1);
-  useEffect(() => { setSize(''); setQuantity(1); window.scrollTo({ top: 0, behavior: 'smooth' }); }, [product.id]);
+  useEffect(() => { setSize(product.options?.[0].label ?? ''); setQuantity(1); window.scrollTo({ top: 0, behavior: 'smooth' }); }, [product.id, product.options]);
+  const unitPrice = priceFor(product.id, size);
   const related = products.filter(item => item.id !== product.id && item.category === product.category).slice(0, 3);
   return <main className="market-product-page market-container">
     <nav className="market-crumbs" aria-label="Breadcrumb"><button onClick={onBack}>Home</button><span>/</span><button onClick={onBack}>{product.category}</button><span>/</span><span>{product.name}</span></nav>
     <div className="market-product-layout">
-      <div className={`market-product-art visual-${product.visual}`}><BoardVisual product={product} /><span>Product illustration for reference</span></div>
-      <div className="market-product-info"><span className="market-card-category">{product.category}</span><h1>{product.name}</h1><p className="market-product-summary">{product.summary}</p><div className="market-product-price"><strong>Price on request</strong><span>Pricing depends on size, quantity and requirements.</span></div><div className="market-product-benefits"><span>✓ Tailored to your requirements</span><span>✓ Availability confirmed by our team</span><span>✓ Quote before you order</span></div><label htmlFor="market-size">Required size or specification <small>Optional</small></label><input id="market-size" maxLength={100} value={size} onChange={event => setSize(event.target.value)} placeholder="e.g. 4 × 3 ft, wall mounted" /><label>Quantity</label><div className="market-product-actions"><QuantityControl value={quantity} onChange={setQuantity} label={`${product.name} quantity`} /><button className="market-primary" onClick={() => onAdd(product.id, quantity, size)}>Add to quote cart <Icon name="arrow" size={18} /></button></div><p className="market-product-note">Verify your email before sending your quote request. We’ll confirm price, delivery and payment details by email.</p></div>
+      <div className={`market-product-art visual-${product.visual}`}><ProductImage product={product} eager /><span>Image for reference. Size, finish and specifications are confirmed with your quote.</span></div>
+      <div className="market-product-info"><span className="market-card-category">{product.category}</span><h1>{product.name}</h1><p className="market-product-summary">{product.summary}</p><div className="market-product-price">{unitPrice !== null ? <><strong>{formatPrice(unitPrice)} <small>per board</small></strong><span>For {size}. {quantity > 1 && `Total for ${quantity}: ${formatPrice(unitPrice * quantity)}. `}Final price, delivery and payment are confirmed with your quote.</span></> : <><strong>Price on request</strong><span>Pricing depends on size, quantity and requirements.</span></>}</div><div className="market-product-benefits"><span>✓ Tailored to your requirements</span><span>✓ Availability confirmed by our team</span><span>✓ Quote before you order</span></div>{product.options ? <><label htmlFor="market-size">Size</label><select id="market-size" value={size} onChange={event => setSize(event.target.value)}>{product.options.map(option => <option key={option.label} value={option.label}>{option.label} — {formatPrice(option.price)}</option>)}</select></> : <><label htmlFor="market-size">Required size or specification <small>Optional</small></label><input id="market-size" maxLength={100} value={size} onChange={event => setSize(event.target.value)} placeholder="e.g. 4 × 3 ft, wall mounted" /></>}<label>Quantity</label><div className="market-product-actions"><QuantityControl value={quantity} onChange={setQuantity} label={`${product.name} quantity`} /><button className="market-primary" onClick={() => onAdd(product.id, quantity, size)}>Add to quote cart <Icon name="arrow" size={18} /></button></div><p className="market-product-note">Verify your email before sending your quote request. We’ll confirm price, delivery and payment details by email.</p></div>
     </div>
     {related.length > 0 && <section className="market-related"><div className="market-section-title"><h2>You may also need</h2><button onClick={onBack}>View all boards →</button></div><div className="market-grid">{related.map(item => <ProductCard key={item.id} product={item} onOpen={onOpen} onAdd={onAdd} />)}</div></section>}
   </main>;

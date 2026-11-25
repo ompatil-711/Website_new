@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { DotField, Split, ease, useStill } from '../../src/site/motion';
 import ProductImage from './ProductImage';
 import { byId, categories, products, priceFor, startingPrice, formatPrice } from './products';
 import { Icon, QuantityControl } from './StoreApp';
 import QuoteDrawer from './QuoteDrawer';
+import Lenis from 'lenis';
 
 const STORAGE_KEY = 'paradise-board-quote-cart-v1';
 const uses = ['All spaces', 'Classrooms', 'Offices', 'Institutions'];
@@ -20,8 +22,14 @@ function productFromHash() {
   return match && byId[match[1]] ? match[1] : null;
 }
 
-function ProductCard({ product, onOpen, onAdd }) {
-  return <motion.article className="market-card" whileHover={{ y: -4 }} transition={{ duration: .18 }}>
+function LogoMark() {
+  return <svg className="lmark" viewBox="0 0 48 48" aria-hidden="true"><rect className="lmark__bg" width="48" height="48" rx="12" /><path className="lmark__g" fillRule="evenodd" d="M13 38V10h13a10 10 0 0 1 0 20h-5.5v8zM20.5 16v8H26a4 4 0 0 0 0-8z" /><rect className="lmark__acc" x="26" y="33" width="10" height="5" rx="2.5" /></svg>;
+}
+
+function ProductCard({ product, onOpen, onAdd, index = 0 }) {
+  const still = useStill();
+  return <motion.article className="market-card" whileHover={still ? undefined : { y: -4 }}
+    initial={still ? false : { opacity: 0, y: 36 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .15 }} transition={{ duration: .6, delay: (index % 3) * .07, ease }}>
     <button className={`market-card-image visual-${product.visual}`} onClick={() => onOpen(product.id)} aria-label={`View ${product.name}`}>
       {product.tag && <span className="market-badge">{product.tag}</span>}
       <ProductImage product={product} />
@@ -52,6 +60,46 @@ function ProductPage({ product, onBack, onAdd, onOpen }) {
   </main>;
 }
 
+function PromoArt() {
+  const still = useStill();
+  const mx = useMotionValue(0); const my = useMotionValue(0);
+  const sx = useSpring(mx, { stiffness: 70, damping: 18 }); const sy = useSpring(my, { stiffness: 70, damping: 18 });
+  const gx = useTransform(sx, [-1, 1], [-14, 14]); const gy = useTransform(sy, [-1, 1], [-10, 10]);
+  const wx = useTransform(sx, [-1, 1], [24, -24]); const wy = useTransform(sy, [-1, 1], [18, -18]);
+  const rot = useTransform(sx, [-1, 1], [-2, 2]);
+  const move = e => { if (still) return; const r = e.currentTarget.getBoundingClientRect(); mx.set(((e.clientX - r.left) / r.width - .5) * 2); my.set(((e.clientY - r.top) / r.height - .5) * 2); };
+  const leave = () => { mx.set(0); my.set(0); };
+  const pop = (d, from) => still ? {} : { initial: { opacity: 0, scale: .9, ...from }, animate: { opacity: 1, scale: 1, x: 0, y: 0 }, transition: { duration: 1.1, delay: d, ease } };
+  return <div className="market-art" onPointerMove={move} onPointerLeave={leave}>
+    <motion.div className="mart mart--green" style={still ? undefined : { x: gx, y: gy, rotate: rot }} {...pop(.3, { x: -70 })}>
+      <svg viewBox="0 0 400 240" aria-hidden="true"><path className="draw" pathLength="1" d="M40 60 h200" stroke="#fff" strokeWidth="7" strokeLinecap="round" fill="none" style={{ '--t': '5s' }} /><path className="draw" pathLength="1" d="M40 110 h150" stroke="#fff" strokeWidth="7" strokeLinecap="round" fill="none" style={{ '--t': '5s', '--d': '.5s' }} /><path className="draw" pathLength="1" d="M40 165 q35 -45 70 0 t70 0 t70 0" stroke="#c8d8e4" strokeWidth="7" strokeLinecap="round" fill="none" style={{ '--t': '5s', '--d': '1s' }} /></svg>
+      <strong>Ideas grow here.</strong>
+    </motion.div>
+    <motion.div className="mart mart--white" style={still ? undefined : { x: wx, y: wy }} {...pop(.55, { y: 70 })}>
+      <strong>Make it clear.</strong>
+      <svg viewBox="0 0 400 120" aria-hidden="true"><path className="draw" pathLength="1" d="M30 70 L110 30 L180 55 L260 15 L370 40" stroke="#2b6777" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="none" style={{ '--t': '5s', '--d': '.4s' }} /></svg>
+    </motion.div>
+    <span className="mchip mchip--a">Prices by size</span><span className="mchip mchip--b">Quote only, no payment</span>
+  </div>;
+}
+
+function Hero() {
+  const still = useStill();
+  const up = i => still ? {} : { initial: { y: 28, opacity: 0 }, animate: { y: 0, opacity: 1 }, transition: { duration: .9, delay: .45 + i * .1, ease } };
+  return <section className="market-hero">
+    <DotField tone="light" />
+    <div className="market-container market-hero__grid">
+      <div className="market-hero__copy">
+        <motion.span className="market-kicker" {...up(0)}>THE BOARD COLLECTION</motion.span>
+        <Split as="h1" onLoad accent={['space.']} delay={.15} text="The right board for every space." />
+        <motion.p {...up(1)}>Explore writing, display and specialty boards. Build your quote cart and tell us exactly what you need.</motion.p>
+        <motion.a href="#catalog" className="market-primary market-primary--light" {...up(2)}>Shop all boards <Icon name="arrow" size={18} /></motion.a>
+      </div>
+      <PromoArt />
+    </div>
+  </section>;
+}
+
 export default function MarketStore() {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All boards');
@@ -63,6 +111,22 @@ export default function MarketStore() {
   const [selectedProduct, setSelectedProduct] = useState(productFromHash);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [toast, setToast] = useState('');
+  const still = useStill();
+  useEffect(() => {
+    const h = document.querySelector('.market-header'); if (!h) return;
+    const set = () => document.documentElement.style.setProperty('--mh', h.offsetHeight + 'px');
+    set(); const ro = new ResizeObserver(set); ro.observe(h); window.addEventListener('resize', set);
+    return () => { ro.disconnect(); window.removeEventListener('resize', set); };
+  }, []);
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-still', still);
+    if (still) return;
+    const lenis = new Lenis({ lerp: .08, wheelMultiplier: .92 });
+    window.__lenis = lenis; let raf = 0;
+    const tick = t => { lenis.raf(t); raf = requestAnimationFrame(tick); };
+    raf = requestAnimationFrame(tick);
+    return () => { cancelAnimationFrame(raf); lenis.destroy(); delete window.__lenis; };
+  }, [still]);
 
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(cart)); }, [cart]);
   useEffect(() => { const update = () => setSelectedProduct(productFromHash()); window.addEventListener('hashchange', update); return () => window.removeEventListener('hashchange', update); }, []);
@@ -88,14 +152,13 @@ export default function MarketStore() {
   function updateItem(index, patch) { setCart(previous => previous.map((item, i) => i === index ? { ...item, ...patch } : item)); }
 
   return <div className="market-site">
-    <div className="market-topline"><div className="market-container"><span>Boards for classrooms, offices & more</span><span>Need help? <a href="tel:+919922404078">+91 99224 04078</a></span></div></div>
-    <header className="market-header"><div className="market-container market-header-main"><a className="market-brand" href="/ecommerce/" onClick={event => { if (selectedProduct) { event.preventDefault(); backToShop(); } }}><span className="market-brand-mark">P</span><span><strong>Paradise Enterprise</strong><small>BOARD STORE</small></span></a><div className="market-search"><Icon name="search" size={19} /><input type="search" value={query} onChange={event => { setQuery(event.target.value); if (selectedProduct) backToShop(); }} onKeyDown={event => { if (event.key === 'Enter') document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' }); }} placeholder="Search whiteboards, greenboards, notice boards..." aria-label="Search products" />{query && <button onClick={() => setQuery('')} aria-label="Clear search"><Icon name="close" size={16} /></button>}</div><div className="market-header-actions"><a className="market-main-link" href="/">Main website ↗</a><button className="market-cart-button" onClick={openCart}><Icon name="bag" size={21} /><span>Quote cart</span><b>{count}</b></button></div></div><nav className="market-container market-nav" aria-label="Product categories">{categories.map(item => <button key={item} className={category === item ? 'active' : ''} onClick={() => selectCategory(item)}>{item}</button>)}<span>Request a quote • No payment required</span></nav></header>
+    <header className="market-header"><div className="market-container market-header-main"><a className="market-brand" href="/ecommerce/" onClick={event => { if (selectedProduct) { event.preventDefault(); backToShop(); } }}><LogoMark /><span><strong>Paradise Enterprise</strong><small>BOARD STORE</small></span></a><div className="market-search"><Icon name="search" size={19} /><input type="search" value={query} onChange={event => { setQuery(event.target.value); if (selectedProduct) backToShop(); }} onKeyDown={event => { if (event.key === 'Enter') document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' }); }} placeholder="Search whiteboards, greenboards, notice boards..." aria-label="Search products" />{query && <button onClick={() => setQuery('')} aria-label="Clear search"><Icon name="close" size={16} /></button>}</div><div className="market-header-actions"><a className="market-main-link" href="/">Main website ↗</a><button className="market-cart-button" onClick={openCart}><Icon name="bag" size={21} /><span>Quote cart</span><b>{count}</b></button></div></div><nav className="market-container market-nav" aria-label="Product categories">{categories.map(item => <button key={item} className={category === item ? 'active' : ''} onClick={() => selectCategory(item)}>{item}</button>)}<span>Request a quote • No payment required</span></nav></header>
 
     {selectedProduct ? <ProductPage key={selectedProduct} product={byId[selectedProduct]} onBack={backToShop} onAdd={addToCart} onOpen={openProduct} /> : <main>
-      <section className="market-promo market-container"><div className="market-promo-copy"><span className="market-kicker">THE BOARD COLLECTION</span><h1>The right board for <em>every space.</em></h1><p>Explore writing, display and specialty boards. Build your quote cart and tell us exactly what you need.</p><a href="#catalog" className="market-primary">Shop all boards <Icon name="arrow" size={18} /></a></div><div className="market-promo-art" aria-hidden="true"><div className="market-promo-green">Ideas grow here.</div><div className="market-promo-white">Make it clear.</div></div></section>
+      <Hero />
       <div className="market-perks market-container"><div><b>01</b><span><strong>Explore the range</strong><small>11 board options</small></span></div><div><b>02</b><span><strong>Add your requirements</strong><small>Size and quantity</small></span></div><div><b>03</b><span><strong>Request a quote</strong><small>Our team confirms the details</small></span></div></div>
       <section id="catalog" className="market-catalog market-container"><div className="market-catalog-heading"><div><span className="market-kicker">SHOP THE COLLECTION</span><h2>Shop boards</h2><p>Find the surface that fits your space and request a tailored quote.</p></div><span>{visible.length} product{visible.length === 1 ? '' : 's'}</span></div>
-        <div className="market-catalog-layout"><aside className={`market-filters ${filtersOpen ? 'open' : ''}`}><div className="market-filter-head"><strong>Filters</strong><button onClick={() => { setCategory('All boards'); setUse('All spaces'); }}>Clear all</button></div><div className="market-filter-group"><h3>Category</h3>{categories.map(item => <button key={item} className={category === item ? 'selected' : ''} onClick={() => setCategory(item)}><span className="market-radio" />{item}<small>{item === 'All boards' ? products.length : products.filter(product => product.category === item).length}</small></button>)}</div><div className="market-filter-group"><h3>Shop by space</h3>{uses.map(item => <button key={item} className={use === item ? 'selected' : ''} onClick={() => setUse(item)}><span className="market-radio" />{item}</button>)}</div><div className="market-filter-help"><strong>Need a custom size?</strong><p>Add a note when you request your quote.</p></div></aside><div className="market-results"><div className="market-toolbar"><button className="market-mobile-filter" onClick={() => setFiltersOpen(!filtersOpen)} aria-expanded={filtersOpen}>Filters {(category !== 'All boards' || use !== 'All spaces') && '•'}</button><span>Showing {visible.length} of {products.length} products</span><label>Sort by <select value={sort} onChange={event => setSort(event.target.value)}><option value="featured">Featured</option><option value="alphabetical">Name A–Z</option></select></label></div>{visible.length ? <div className="market-grid">{visible.map(product => <ProductCard key={product.id} product={product} onOpen={openProduct} onAdd={addToCart} />)}</div> : <div className="market-empty"><h3>No boards found</h3><p>Try another search or clear your filters.</p><button className="market-primary" onClick={() => { setQuery(''); setCategory('All boards'); setUse('All spaces'); }}>Show all boards</button></div>}</div></div>
+        <div className="market-catalog-layout"><aside className={`market-filters ${filtersOpen ? 'open' : ''}`}><div className="market-filter-head"><strong>Filters</strong><button onClick={() => { setCategory('All boards'); setUse('All spaces'); }}>Clear all</button></div><div className="market-filter-group"><h3>Category</h3>{categories.map(item => <button key={item} className={category === item ? 'selected' : ''} onClick={() => setCategory(item)}><span className="market-radio" />{item}<small>{item === 'All boards' ? products.length : products.filter(product => product.category === item).length}</small></button>)}</div><div className="market-filter-group"><h3>Shop by space</h3>{uses.map(item => <button key={item} className={use === item ? 'selected' : ''} onClick={() => setUse(item)}><span className="market-radio" />{item}</button>)}</div><div className="market-filter-help"><strong>Need a custom size?</strong><p>Add a note when you request your quote.</p></div></aside><div className="market-results"><div className="market-toolbar"><button className="market-mobile-filter" onClick={() => setFiltersOpen(!filtersOpen)} aria-expanded={filtersOpen}>Filters {(category !== 'All boards' || use !== 'All spaces') && '•'}</button><span>Showing {visible.length} of {products.length} products</span><label>Sort by <select value={sort} onChange={event => setSort(event.target.value)}><option value="featured">Featured</option><option value="alphabetical">Name A–Z</option></select></label></div>{visible.length ? <div className="market-grid">{visible.map(product => <ProductCard key={product.id} product={product} index={visible.indexOf(product)} onOpen={openProduct} onAdd={addToCart} />)}</div> : <div className="market-empty"><h3>No boards found</h3><p>Try another search or clear your filters.</p><button className="market-primary" onClick={() => { setQuery(''); setCategory('All boards'); setUse('All spaces'); }}>Show all boards</button></div>}</div></div>
       </section><section className="market-help market-container"><div><span className="market-kicker">HERE TO HELP</span><h2>Know what you need? Get a quote.</h2><p>Send your selected boards, sizes and quantities. We’ll confirm availability, pricing and delivery.</p></div><button className="market-primary" onClick={openCart}>Open quote cart <Icon name="arrow" size={18} /></button></section>
     </main>}
     <footer className="market-footer"><div className="market-container"><div><strong>Paradise Enterprise</strong><p>Writing and display boards for classrooms, workplaces and institutions.</p></div><div><strong>Explore</strong><button onClick={backToShop}>All boards</button><a href="/">Main website</a></div><div><strong>Contact</strong><a href="tel:+919922404078">+91 99224 04078</a><button onClick={openCart}>Request a quote</button></div></div><small>Product illustrations are representative. Specifications, pricing, delivery and payment are confirmed with your quote.</small></footer>

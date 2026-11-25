@@ -1,0 +1,1 @@
+Drop real photos here as <slot>.webp (hero, surface-white, surface-ceramic, surface-magnetic, surface-green, install-mounting, room-1, workshop). Each replaces its animated stand-in automatically. Product photos go in ../products/<id>.webp.

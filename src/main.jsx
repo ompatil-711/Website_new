@@ -1,10 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App';
-import MotionPreferences from './components/MotionPreferences';
-import './styles/professional.css';
-import './styles/expressive.css';
-import './styles/boards.css';
-import './styles/shop-link.css';
+import { MotionConfig } from 'framer-motion';
+import Site from './site/Site';
 
-createRoot(document.getElementById('root')).render(<React.StrictMode><MotionPreferences><App /></MotionPreferences></React.StrictMode>);
+createRoot(document.getElementById('root')).render(<React.StrictMode><MotionConfig reducedMotion="never"><Site /></MotionConfig></React.StrictMode>);

@@ -8,6 +8,8 @@ const inks = [['--accent', 'Blue marker'], ['--cool', 'Green marker']];
 function DrawBoard() {
   const canvas = useRef(null); const colorRef = useRef(inks[0][0]);
   const [color, setColor] = useState(inks[0][0]); const [touched, setTouched] = useState(false);
+  const [coarse] = useState(() => typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches);
+  const [drawOn, setDrawOn] = useState(false);
   const drawing = useRef(false); const last = useRef(null);
   useEffect(() => {
     const c = canvas.current;
@@ -16,7 +18,7 @@ function DrawBoard() {
   }, []);
   const pos = e => { const r = canvas.current.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
   const line = (a, b) => { const x = canvas.current.getContext('2d'); x.strokeStyle = cssVar(colorRef.current); x.lineWidth = 5; x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(b[0], b[1]); x.stroke(); };
-  const down = e => { e.stopPropagation(); e.currentTarget.setPointerCapture(e.pointerId); drawing.current = true; last.current = pos(e); line(last.current, [last.current[0] + .1, last.current[1]]); setTouched(true); };
+  const down = e => { if (coarse && !drawOn) return; e.stopPropagation(); e.currentTarget.setPointerCapture(e.pointerId); drawing.current = true; last.current = pos(e); line(last.current, [last.current[0] + .1, last.current[1]]); setTouched(true); };
   const move = e => { if (!drawing.current) return; const p = pos(e); line(last.current, p); last.current = p; };
   const up = () => { drawing.current = false; };
   const clear = () => { const c = canvas.current; c.getContext('2d').clearRect(0, 0, c.width, c.height); };
@@ -27,13 +29,14 @@ function DrawBoard() {
         <path className="draw" pathLength="1" d="M40 60 q30 -34 60 0 t60 0" fill="none" stroke="var(--cool)" strokeWidth="6" strokeLinecap="round" style={{ '--t': '4.5s', '--d': '.8s' }} />
         <circle className="draw" pathLength="1" cx="320" cy="170" r="26" fill="none" stroke="var(--cool)" strokeWidth="6" style={{ '--t': '4.5s', '--d': '1.4s' }} />
       </svg>
-      <canvas ref={canvas} className="dboard__canvas" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} aria-label="Drawing board: write or draw with your mouse or finger" />
-      <span className={'dboard__hint' + (touched ? ' is-off' : '')}>Try it. Write on the board</span>
+      <canvas ref={canvas} className="dboard__canvas" style={coarse ? { touchAction: drawOn ? 'none' : 'pan-y' } : undefined} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} aria-label="Drawing board: write or draw with your mouse or finger" />
+      <span className={'dboard__hint' + (touched ? ' is-off' : '')}>{coarse ? 'Tap Draw, then write' : 'Try it. Write on the board'}</span>
     </div>
     <div className="dboard__tray">
       <span className="dboard__markers" role="group" aria-label="Marker colour">
         {inks.map(([c, n]) => <button key={c} type="button" className={'marker' + (color === c ? ' is-on' : '')} style={{ '--c': `var(${c})` }} aria-label={n} aria-pressed={color === c} onClick={() => { colorRef.current = c; setColor(c); }} />)}
       </span>
+      {coarse && <button type="button" className="dboard__clear dboard__draw" aria-pressed={drawOn} onClick={() => setDrawOn(v => !v)}>{drawOn ? 'Done' : 'Draw'}</button>}
       <button type="button" className="dboard__clear" onClick={clear}>Wipe clean</button>
     </div>
   </div>;

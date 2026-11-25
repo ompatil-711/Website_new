@@ -191,3 +191,44 @@ html.lenis,html.lenis body{height:auto}
 .market-card:hover{box-shadow:0 26px 40px -26px rgba(43,103,119,.6)}
 .market-card:hover .market-card-image .board-visual,.market-card:hover .market-card-image .product-photo{transform:scale(1.04)}
 
+
+/* ───────── shop: mobile-first ───────── */
+html{-webkit-text-size-adjust:100%}
+a,button,summary,label{-webkit-tap-highlight-color:transparent}
+a,button,input,select{touch-action:manipulation}
+.market-cartbar{display:none}
+@media (max-width:700px){
+  .market-cartbar{display:flex;align-items:center;justify-content:space-between;gap:12px;position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:45;min-height:56px;padding:0 18px;border:0;border-radius:10px;background:var(--deep);color:#fff;font-size:14px;box-shadow:0 18px 34px -14px rgba(0,0,0,.6);animation:cartbarIn .5s var(--ease)}
+  .market-cartbar b{display:inline-grid;place-items:center;min-width:26px;height:26px;border-radius:50%;background:#fff;color:var(--deep);font-size:13px;margin-right:4px}
+  .market-cartbar strong{display:inline-flex;align-items:center;gap:8px;font-weight:600}
+  .market-toast{bottom:calc(84px + env(safe-area-inset-bottom))}
+  .market-footer{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+}
+@keyframes cartbarIn{from{transform:translateY(120%)}}
+@media (max-width:640px){
+  .market-perks{grid-template-columns:1fr}
+  .market-perks>div+div{border-left:0;border-top:1px solid var(--line)}
+  .market-perks>div{padding:14px 18px}
+  .market-grid{gap:12px}
+  .market-card-body{padding:14px 12px 14px}
+  .market-card-title{font-size:18px}
+  .market-card-body p{font-size:13px;line-height:1.45}
+  .market-card-category{font-size:10.5px}
+  .market-card-price strong{font-size:17px}
+  .market-card-price span{font-size:11px}
+  .market-card-actions button,.market-add{min-height:44px;font-size:14px}
+  .market-mobile-filter,.market-toolbar select{min-height:44px;font-size:15px}
+  .market-toolbar{gap:10px}
+  .market-help{padding:24px 20px}
+  .market-help .market-primary{width:100%}
+  .market-primary{min-height:52px}
+  .market-product-layout{grid-template-columns:1fr;gap:22px}
+  .market-product-art{min-height:300px;padding:20px}
+  .market-hero .market-primary--light{width:100%}
+  .market-nav button{min-height:44px}
+}
+@media (pointer:coarse){
+  .market-filter-group button{min-height:44px}
+  .market-cart-button{min-width:48px}
+}
+

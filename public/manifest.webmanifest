@@ -1,0 +1,10 @@
+{
+  "name": "Paradise Enterprise",
+  "short_name": "Paradise",
+  "description": "Classroom boards and school furniture, made in Nagpur since 2001.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2b6777",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

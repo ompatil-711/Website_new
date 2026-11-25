@@ -163,6 +163,7 @@ export default function MarketStore() {
     </main>}
     <footer className="market-footer"><div className="market-container"><div><strong>Paradise Enterprise</strong><p>Writing and display boards for classrooms, workplaces and institutions.</p></div><div><strong>Explore</strong><button onClick={backToShop}>All boards</button><a href="/">Main website</a></div><div><strong>Contact</strong><a href="tel:+919922404078">+91 99224 04078</a><button onClick={openCart}>Request a quote</button></div></div><small>Product illustrations are representative. Specifications, pricing, delivery and payment are confirmed with your quote.</small></footer>
     {cartOpen && <QuoteDrawer items={cart} step={cartStep} onStep={setCartStep} onClose={() => setCartOpen(false)} onQuantity={(index, quantity) => updateItem(index, { quantity })} onSize={(index, size) => updateItem(index, { size })} onRemove={index => setCart(previous => previous.filter((_, i) => i !== index))} onSuccess={() => setCart([])} />}
+    {count > 0 && !cartOpen && <button className="market-cartbar" onClick={openCart}><span><b>{count}</b> {count === 1 ? 'item' : 'items'} in your quote</span><strong>View quote cart <Icon name="arrow" size={18} /></strong></button>}
     {toast && <div className="market-toast" role="status">✓ {toast}<button onClick={openCart}>View cart</button></div>}
   </div>;
 }

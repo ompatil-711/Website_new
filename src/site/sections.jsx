@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, animate, motion, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform } from 'framer-motion';
 import Slot from './Slot';
-import { Arrow, Count, Reveal, Split, ease, useStill, setStill } from './motion';
+import { Arrow, Count, Reveal, Split, ease, useStill } from './motion';
 import ProductImage from '../../ecommerce/src/ProductImage';
 import { products, byId, startingPrice, formatPrice } from '../../ecommerce/src/products';
 
@@ -71,6 +71,23 @@ export function Header() {
       <a href="tel:+919922404078" className="sheet__call">Call {PHONE_1}</a>
     </div>
   </header>;
+}
+
+/* mobile: a fixed bottom bar with the two things a phone visitor wants, call and quote */
+export function MobileBar() {
+  const [passed, setPassed] = useState(false); const [atForm, setAtForm] = useState(false);
+  useEffect(() => {
+    const f = () => setPassed(window.scrollY > window.innerHeight * .6);
+    f(); window.addEventListener('scroll', f, { passive: true });
+    const el = document.getElementById('contact');
+    const io = new IntersectionObserver(([e]) => setAtForm(e.isIntersecting), { threshold: .12 });
+    if (el) io.observe(el);
+    return () => { window.removeEventListener('scroll', f); io.disconnect(); };
+  }, []);
+  return <div className={'mbar' + (passed && !atForm ? ' is-on' : '')} role="region" aria-label="Quick actions">
+    <a className="btn btn--ghost btn--sm mbar__call" href="tel:+919922404078">Call us</a>
+    <a className="btn btn--light btn--sm mbar__quote" href="#contact">Request a quote <Arrow /></a>
+  </div>;
 }
 
 /* ───────── marquee ───────── */
@@ -402,7 +419,6 @@ export function Quote({ prefill }) {
 
 /* ───────── footer ───────── */
 export function Footer() {
-  const still = useStill();
   return <footer className="footer">
     <div className="wrap footer__grid">
       <div><a className="logo logo--w" href="#top"><LogoMark tone="paper" /><span className="logo__text"><b>Paradise<em> Enterprise</em></b><small>Est. 2001 · Nagpur</small></span></a><p>Boards and school furniture, made and fitted in Nagpur since 2001.</p></div>
@@ -410,6 +426,6 @@ export function Footer() {
       <div><h4>Contact</h4><a className="link" href="tel:+919922404078">{PHONE_1}</a><a className="link" href="tel:+919822571372">{PHONE_2}</a><a className="link" href={`mailto:${EMAIL}`}>{EMAIL}</a><a className="link" href={INSTAGRAM} target="_blank" rel="noopener noreferrer">Instagram</a></div>
     </div>
     <div className="footer__word" aria-hidden="true">Paradise</div>
-    <div className="wrap footer__base"><span>© {new Date().getFullYear()} Paradise Enterprise · Nagpur, Maharashtra</span><button type="button" className="motion-toggle" aria-pressed={still} onClick={() => setStill(!still)}>{still ? 'Turn animations on' : 'Reduce motion'}</button></div>
+    <div className="wrap footer__base"><span>© {new Date().getFullYear()} Paradise Enterprise · Nagpur, Maharashtra</span></div>
   </footer>;
 }

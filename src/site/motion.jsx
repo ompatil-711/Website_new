@@ -93,7 +93,8 @@ export const cssVar = n => getComputedStyle(document.documentElement).getPropert
 /* Motion preference. The site animates by default (the owner wants the full experience, whatever the OS says);
    visitors can switch to a still page with the footer toggle, which is remembered. */
 const KEY = 'pe-still'; const subs = new Set();
-const read = () => { try { return localStorage.getItem(KEY) === '1'; } catch { return false; } };
+/* Animations are always on: the owner removed the visitor toggle, so any saved choice is ignored. */
+const read = () => false;
 export function setStill(v) {
   try { localStorage.setItem(KEY, v ? '1' : '0'); } catch { /* private mode */ }
   document.documentElement.toggleAttribute('data-still', v); subs.forEach(f => f());

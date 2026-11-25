@@ -519,3 +519,51 @@ html[data-still] .rng__list>li{opacity:1;transform:none}
 .logo__text small{letter-spacing:.14em}
 .logo--w .logo__text small{color:var(--sun)}
 
+
+/* ───────── mobile-first touches ───────── */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+a,button,summary,label{-webkit-tap-highlight-color:transparent}
+a,button,summary,input,select,textarea,.chipbtn{touch-action:manipulation}
+.dboard__canvas{touch-action:none}
+.hdr__row{padding-left:max(var(--gut),env(safe-area-inset-left));padding-right:max(var(--gut),env(safe-area-inset-right))}
+
+/* bottom action bar, phones only */
+.mbar{display:none}
+@media (max-width:700px){
+  .mbar{display:grid;grid-template-columns:auto 1fr;gap:10px;position:fixed;left:0;right:0;bottom:0;z-index:35;padding:10px max(14px,env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-right));background:var(--deep);box-shadow:0 -14px 30px -18px rgba(0,0,0,.6);transform:translateY(115%);transition:transform .45s var(--ease)}
+  .mbar.is-on{transform:none}
+  .mbar .btn{height:48px;width:auto}
+  .mbar__call{color:#fff;border-color:rgba(255,255,255,.7);padding:0 22px}
+  .mbar__quote{justify-content:center}
+  .footer{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+}
+
+/* bigger touch targets on touch screens */
+@media (pointer:coarse){
+  .chipbtn{min-height:44px}
+  .qty button{width:52px;height:50px}
+  .marker{height:32px;width:60px}
+  .dboard__clear{min-height:40px;padding:0 18px}
+  .footer .link{padding-block:7px;margin-bottom:2px}
+  .rng__dots button{width:14px;height:14px}.rng__dots button.is-on{height:30px}
+  summary{min-height:56px}
+  .hdr__toggle{width:48px;height:48px}
+  .dboard__draw[aria-pressed=true]{background:var(--ink);color:#fff}
+}
+@media (max-width:640px){
+  body{font-size:16px;line-height:1.6}
+  .btn{height:52px}
+  .hero__copy .btn-row{width:100%}
+  .calc__total{font-size:clamp(48px,16vw,72px)}
+  .tables{gap:32px}
+  th,td{padding:13px 0}
+  input,select,textarea{font-size:16px;min-height:50px}
+  .form{padding:22px 18px}
+  .wchip{font-size:13px;padding:8px 12px}
+  .rng__list p,.pcard p{font-size:16px}
+  .section{scroll-margin-top:calc(var(--h) + 8px)}
+}
+
+.contact dd,.contact a{overflow-wrap:anywhere}
+@media (max-width:640px){.contact dd{font-size:17px}.cols h2+.lead{margin-top:14px}}
+

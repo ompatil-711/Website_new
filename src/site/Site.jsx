@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useStill } from './motion';
 import Lenis from 'lenis';
 import Hero from './Hero';
-import { Header, Marquee, Range, Process, Rooms, PriceIt, About, Faq, Quote, Footer } from './sections';
+import { Header, MobileBar, Marquee, Range, Process, Rooms, PriceIt, About, Faq, Quote, Footer } from './sections';
 import './site.css';
 
 const categoryFor = p => p.id === 'digital' ? 'Digital Panels' : p.category === 'Writing boards' ? 'Writing Boards' : 'Notice Boards';
@@ -27,5 +27,6 @@ export default function Site() {
     <Header />
     <main id="main"><Hero /><Marquee /><Range /><Process /><Rooms /><PriceIt onQuote={quote} /><About /><Faq /><Quote prefill={prefill} /></main>
     <Footer />
+    <MobileBar />
   </>;
 }

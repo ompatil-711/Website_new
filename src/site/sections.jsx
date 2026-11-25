@@ -125,6 +125,7 @@ function RngItem({ s, i, a, setA, still }) {
   const q = byId[s.id]; const f = startingPrice(q); const shown = q.options ? q.options.slice(0, 6) : [];
   return <motion.li ref={ref} id={`rng-${s.id}`} variants={itemV} initial="off" animate={i === a ? 'on' : 'off'} onViewportEnter={() => setA(i)} viewport={{ margin: '-40% 0px -40% 0px' }}
     style={still || window.matchMedia('(max-width:1100px)').matches ? undefined : { rotateX, y, scale, opacity, transformPerspective: 1100, transformOrigin: '50% 50%' }}>
+    <div className="rng__thumb" aria-hidden="true" style={{ background: `color-mix(in srgb, var(${s.look[2]}) 26%, #ffffff)` }}><ProductImage product={q} /></div>
     <span className="rng__n">{String(i + 1).padStart(2, '0')}</span>
     <div>
       <motion.span className="rng__cat" variants={partV}>{q.category}{q.tag ? ` · ${q.tag}` : ''}</motion.span>

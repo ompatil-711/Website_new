@@ -232,3 +232,84 @@ a,button,input,select{touch-action:manipulation}
   .market-cart-button{min-width:48px}
 }
 
+
+/* ════════════════════════════════════════════════════════════════════════
+   SHOP PHONE LAYOUT (≤700px only) — desktop and tablet untouched.
+   ════════════════════════════════════════════════════════════════════════ */
+@media (max-width:700px){
+  .market-container{width:auto;margin-inline:16px}
+  /* compact header */
+  .market-header-main{padding:10px 0 8px;gap:10px}
+  .lmark{width:36px;height:36px}
+  .market-brand strong{font-size:16px}
+  .market-brand small{font-size:9px;letter-spacing:.1em}
+  .market-search{height:42px;padding:0 14px}
+  .market-search input{font-size:15px}
+  .market-cart-button{height:42px;padding:0 6px 0 12px}
+  .market-cart-button b{width:28px;height:28px}
+  .market-nav{height:46px;gap:4px;margin-inline:-16px;padding-inline:16px}
+  .market-nav button{min-height:36px;height:36px;padding:0 13px;font-size:13.5px}
+  .market-nav>span{display:none}
+
+  /* hero: copy, then the two boards side by side (no overlap, no floating labels) */
+  .market-hero__grid{gap:22px;padding-block:28px 30px}
+  .market-hero__copy{gap:14px}
+  .market-hero h1{font-size:clamp(32px,9.6vw,40px)}
+  .market-hero p{font-size:15.5px}
+  .market-hero .market-primary--light{width:100%;min-height:50px}
+  .market-art{height:auto;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .mart{position:relative;inset:auto;width:auto;aspect-ratio:4/3;padding:12px;border-width:6px;transform:none!important;opacity:1!important;box-shadow:0 18px 30px -20px rgba(0,0,0,.6)}
+  .mart--green strong{font-size:13px;left:10px;bottom:10px}
+  .mart--white strong{font-size:14px}
+  .mart--white svg{left:8%;right:8%;bottom:10%;width:84%}
+  .mchip{display:none}
+
+  /* steps */
+  .market-perks{margin-top:16px;margin-bottom:22px}
+  .market-perks>div{padding:12px 14px;gap:12px}
+  .market-perks strong{font-size:14.5px}
+  .market-perks small{font-size:12.5px}
+
+  /* catalogue heading + toolbar */
+  .market-catalog{padding-bottom:40px}
+  .market-catalog-heading{margin-bottom:14px;align-items:flex-start}
+  .market-catalog-heading h2{font-size:30px}
+  .market-catalog-heading p{font-size:14.5px}
+  .market-catalog-heading>span{font-size:11.5px;white-space:nowrap}
+  .market-catalog-layout{gap:0}
+  .market-toolbar{padding-bottom:10px;margin-bottom:12px}
+
+  /* product cards: one per row, picture left, details right — nothing overlaps */
+  .market-grid{grid-template-columns:1fr;gap:12px}
+  .market-card{display:grid;grid-template-columns:40% minmax(0,1fr);border-radius:12px;box-shadow:0 16px 26px -22px rgba(43,103,119,.55)}
+  .market-card-image{aspect-ratio:auto;height:100%;min-height:158px;padding:8px;border-radius:0}
+  .market-card-image .board-visual{height:100%;width:100%}
+  .market-badge{top:6px;left:6px;font-size:9.5px;padding:3px 6px}
+  .market-card-body{display:flex;flex-direction:column;gap:3px;padding:12px 12px 12px;min-width:0}
+  .market-card-category{font-size:10px}
+  .market-card-title{font-size:17px;text-align:left;padding:0}
+  .market-card-body p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13px;line-height:1.4;margin:2px 0 6px}
+  .market-card-price{display:flex;flex-direction:column;gap:1px;margin-top:auto;padding-top:6px}
+  .market-card-price strong{font-size:16px}
+  .market-card-price span{font-size:11px}
+  .market-card-actions{grid-template-columns:1fr;margin-top:8px}
+  .market-card-actions .market-view{display:none}
+  .market-card-actions .market-add,.market-add{min-height:40px;font-size:13.5px}
+
+  /* help banner, footer, product page */
+  .market-help{padding:22px 18px;margin-bottom:28px}
+  .market-help h2{font-size:24px}
+  .market-footer{padding-top:36px}
+  .market-footer>.market-container{grid-template-columns:1fr 1fr;gap:22px}
+  .market-footer>.market-container>div:first-child{grid-column:1/-1}
+  .market-product-page{padding-bottom:40px}
+  .market-product-art{min-height:240px;padding:16px}
+  .market-product-info h1{font-size:32px}
+  .market-related .market-grid{grid-template-columns:1fr}
+}
+
+@media (max-width:700px){
+  .market-card-body p{max-height:2.8em}
+  .mart--green strong{animation:none;width:auto;overflow:visible}
+}
+

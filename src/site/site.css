@@ -567,3 +567,144 @@ a,button,summary,input,select,textarea,.chipbtn{touch-action:manipulation}
 .contact dd,.contact a{overflow-wrap:anywhere}
 @media (max-width:640px){.contact dd{font-size:17px}.cols h2+.lead{margin-top:14px}}
 
+
+/* ════════════════════════════════════════════════════════════════════════
+   PHONE LAYOUT (≤700px only). Everything below is scoped to phones, so the
+   desktop and tablet views are untouched. Scroll-scrubbed / pinned effects
+   are replaced by simple, compact layouts and swipe carousels.
+   ════════════════════════════════════════════════════════════════════════ */
+.rng__thumb{display:none}
+@media (max-width:700px){
+  :root{--gut:18px}
+  h2,.split{font-size:clamp(28px,8.2vw,34px)}
+  .lead{font-size:16px}
+  .label{margin-bottom:12px;font-size:11.5px}
+  .section{padding-block:52px}
+  .head{margin-bottom:22px}
+
+  /* hero: copy, then one clean board (no overlapping layers, no parallax) */
+  .hero__grid{gap:26px;padding-block:28px 28px}
+  .hero__copy{gap:16px;transform:none!important;opacity:1!important}
+  .hero h1{font-size:clamp(34px,10.4vw,42px)}
+  .hero .lead{font-size:16px;line-height:1.5}
+  .hero .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+  .hero .btn-row .btn{width:100%;padding:0 12px;height:50px;font-size:15px}
+  .wall{height:auto;transform:none!important}
+  .wall__a{position:relative;width:100%;transform:none!important;opacity:1!important}
+  .wall__b,.wall__c,.wchip{display:none}
+  .dboard__face{aspect-ratio:4/3}
+  .dboard__hint{font-size:11.5px;bottom:10px}
+  .specs{grid-template-columns:repeat(4,1fr)}
+  .specs>div,.specs>div:nth-child(3){padding:14px 6px 16px;border-right:1px solid rgba(255,255,255,.22);border-top:0}
+  .specs>div:first-child{padding-left:0}.specs>div:last-child{border-right:0}
+  .specs dt{font-size:9.5px;letter-spacing:.03em;margin-bottom:6px;line-height:1.25;min-height:2.5em}
+  .specs dd{font-size:22px}
+
+  .marquee{padding:12px 0}
+  .marquee__track li{font-size:18px;gap:18px;padding-left:18px}
+
+  /* range: fixed light section, swipeable board cards */
+  .range{background-color:var(--paper)!important}
+  .range.range--dark{color:var(--ink);--ink:#2b6777;--muted:color-mix(in srgb,#2b6777 86%,#fff);--line:#c8d8e4;--accent-text:#2b6777}
+  .range--dark .acc{color:var(--cool)}
+  .range--dark .rng__sizes i,.range--dark .rng__uses i{background:#fff;color:var(--ink);border-color:var(--line)}
+  .range--dark .btn--ghost{color:var(--ink);border-color:var(--ink)}
+  .range--dark .btn--ghost:hover{color:#fff}
+  .range--dark .btn--ghost::before{background:var(--ink)}
+  .range--dark .more .btn--ghost{color:var(--ink)}
+  .rng__sticky{display:none}
+  .rng::before{content:"Swipe to see all boards  →";display:block;font:500 11.5px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .rng__list{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:calc(var(--gut)*-1);padding:2px var(--gut) 18px;perspective:none;scrollbar-width:none;overscroll-behavior-x:contain}
+  .rng__list::-webkit-scrollbar{display:none}
+  .rng__list>li{display:block;flex:0 0 84%;min-height:0;scroll-snap-align:start;scroll-margin-left:var(--gut);background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 14px 16px;box-shadow:0 18px 30px -24px rgba(43,103,119,.55);transform:none!important;opacity:1!important}
+  .rng__list>li *{opacity:1!important;transform:none!important}
+  .rng__thumb{display:grid;place-items:center;aspect-ratio:16/10;border-radius:10px;margin-bottom:14px;padding:10px;overflow:hidden}
+  .rng__thumb svg,.rng__thumb img{width:100%;height:100%;object-fit:contain}
+  .rng__thumb .product-photo{object-fit:cover;border-radius:6px}
+  .rng__n{display:none}
+  .rng__cat{font-size:10.5px;margin-bottom:6px}
+  .rng__list h3{font-size:24px;margin-bottom:6px}
+  .rng__line{font-size:17px!important;margin-bottom:12px!important;max-width:none}
+  .rng__points{gap:6px;margin-bottom:14px}
+  .rng__points li{font-size:14px;padding-left:26px;line-height:1.45}
+  .rng__points li::before{width:15px;height:15px;top:.2em}
+  .rng__points li::after{left:5px;top:calc(.2em + 4px)}
+  .rng__sizes{gap:6px;margin-bottom:14px}
+  .rng__sizes span{min-width:0;width:100%;margin:0 0 2px}
+  .rng__sizes i{font-size:12.5px;padding:5px 9px}
+  .rng__uses{display:none}
+  .rng__list>li .btn{width:100%;height:48px;font-size:14.5px}
+  .more{margin-top:22px}.more .btn{width:100%}
+
+  /* process: swipeable cards instead of a tall stack */
+  .process__stick{padding-block:52px 34px}
+  .process__head h2{font-size:clamp(28px,8.2vw,34px)}
+  .process__viewport{margin-top:20px;padding:0}
+  .process__track{flex-direction:row;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding:2px var(--gut) 18px;scrollbar-width:none;overscroll-behavior-x:contain}
+  .process__track::-webkit-scrollbar{display:none}
+  .pcard{flex:0 0 82%;width:auto;scroll-snap-align:start;scroll-margin-left:var(--gut);box-shadow:0 18px 30px -24px rgba(43,103,119,.55);transform:none!important}
+  .pcard__float{animation:none;padding:16px;gap:8px}
+  .pcard h3{font-size:20px}
+  .pcard p{font-size:14.5px;line-height:1.5}
+  .pcard .slot{aspect-ratio:16/10!important;flex:none;min-height:0;margin-top:6px}
+  .process__head::after{content:"Swipe through the 6 steps  →";display:block;margin-top:10px;font:500 11.5px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+
+  /* rooms band: a simple block, no pinned zoom */
+  .expand{height:auto}
+  .expand__stick{position:relative;top:auto;height:auto;overflow:visible;padding-block:52px}
+  .expand__head{position:static;padding-top:0;opacity:1!important;transform:none!important}
+  .expand__head h2{font-size:clamp(28px,8.2vw,34px)}
+  .expand__frame{position:relative;inset:auto;margin:24px var(--gut) 0;aspect-ratio:4/3;border-radius:12px;overflow:hidden;clip-path:none!important}
+  .expand__in{transform:none!important}
+  .expand__stats{left:8px;right:8px;bottom:8px;opacity:1!important;transform:none!important}
+  .expand__stats>div{padding:9px 8px}
+  .expand__stats b{font-size:20px}
+  .expand__stats>div>span{font-size:10.5px;line-height:1.25}
+
+  /* pricing: chips in one swipeable row each */
+  .calc__controls{padding:18px 16px;gap:20px}
+  .calc__controls .chips{flex-wrap:nowrap;overflow-x:auto;margin-inline:-16px;padding:2px 16px 6px;scrollbar-width:none}
+  .calc__controls .chips::-webkit-scrollbar{display:none}
+  .chipbtn{flex:none;padding:10px 14px;font-size:14px}
+  .calc__result{padding:22px 18px;gap:10px}
+  .calc__total{font-size:clamp(40px,13vw,56px)}
+  .calc__result .btn{width:100%;align-self:stretch}
+  .alltable{padding:0 16px}
+  .alltable summary{font-size:16px}
+
+  /* about, faq, contact, footer */
+  .statement{font-size:clamp(22px,6.6vw,28px);margin-bottom:36px}
+  .about{gap:32px}
+  .person{grid-template-columns:36px 1fr;padding:18px 0}
+  .person h4{font-size:20px}
+  .person p{font-size:15px}
+  .clients li{padding:14px 0;font-size:17px}
+  .clients li:hover{padding-left:0;background:none}
+  .faq{gap:20px}
+  summary{font-size:16.5px;padding:18px 0}
+  details p{font-size:15px}
+  .contact{margin-top:24px;gap:16px}
+  .footer{padding-top:44px}
+  .footer__grid{gap:26px}
+  .footer__word{font-size:25vw;margin-top:28px}
+  .footer .link{font-size:15px}
+  .mbar .btn{height:46px;font-size:14.5px}
+}
+
+@media (max-width:700px){.hero .btn-row .m-arrow{display:none}}
+@media (max-width:700px){
+  .specs{grid-template-columns:1fr 1fr}
+  .specs>div,.specs>div:nth-child(3){padding:14px 12px 16px;border-right:0;border-top:0}
+  .specs>div:nth-child(odd){padding-left:0;border-right:1px solid rgba(255,255,255,.22)}
+  .specs>div:nth-child(n+3){border-top:1px solid rgba(255,255,255,.22)}
+  .specs dt{font-size:10.5px;min-height:0}
+  .specs dd{font-size:26px}
+  .dboard{padding:10px}
+  .dboard__tray{gap:8px;padding:0 2px 10px}
+  .dboard__markers{gap:8px;margin-right:auto}
+  .marker{width:42px;height:26px}
+  .dboard__clear{white-space:nowrap;padding:0 12px;font-size:13px;min-height:36px}
+}
+
+@media (max-width:700px){.rng__list>li .btn{font-size:13.5px;padding:0 14px;gap:8px;white-space:nowrap}}
+

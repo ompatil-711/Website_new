@@ -3,7 +3,7 @@ import { AnimatePresence, animate, motion, useMotionValue, useMotionValueEvent, 
 import Slot from './Slot';
 import { Arrow, Count, Reveal, Split, ease, useStill } from './motion';
 import ProductImage from '../../ecommerce/src/ProductImage';
-import { products, byId, startingPrice, formatPrice } from '../../ecommerce/src/products';
+import { byId, groups, productsIn, startingPrice, formatPrice } from '../../ecommerce/src/products';
 
 const PHONE_1 = '+91 99224 04078';
 const PHONE_2 = '+91 98225 71372';
@@ -22,7 +22,7 @@ export function LogoMark({ tone = 'white' }) {
     <rect className="lmark__acc" x="26" y="33" width="10" height="5" rx="2.5" />
   </svg>;
 }
-const nav = [['range', 'Boards'], ['install', 'Process'], ['price', 'Pricing'], ['about', 'About'], ['faq', 'FAQ']];
+const nav = [['products', 'Products'], ['install', 'Process'], ['price', 'Pricing'], ['about', 'About'], ['faq', 'FAQ']];
 export function Header() {
   const [open, setOpen] = useState(false); const [stuck, setStuck] = useState(false); const [active, setActive] = useState('');
   const { scrollYProgress } = useScroll();
@@ -91,9 +91,9 @@ export function MobileBar() {
 }
 
 /* ───────── marquee ───────── */
-const tags = ['Whiteboards', 'Greenboards', 'Notice boards', 'Magnetic boards', 'Ceramic boards', 'Digital boards', 'Drawing boards', 'School furniture', 'Lab set-ups'];
+const tags = ['Whiteboards', 'Greenboards', 'Notice boards', 'Digital boards', 'Board stands', 'Desk benches', 'Office furniture', 'Podiums', 'Fire safety', 'Sound systems'];
 export function Marquee() {
-  return <div className="marquee" aria-label="What we make">
+  return <div className="marquee" aria-label="What we supply">
     <div className="marquee__row">{[0, 1].map(k => <ul key={k} className="marquee__track" aria-hidden={k ? 'true' : undefined}>{tags.map(t => <li key={t}>{t}<i /></li>)}</ul>)}</div>
   </div>;
 }
@@ -156,7 +156,7 @@ export function Range() {
   const shadowScale = useTransform(slp, v => 1 - Math.abs(Math.cos(v * showcase.length * Math.PI)) * .28);
   return <section className={'section range' + (dark ? ' range--dark' : '') + (secBg === '--sun' ? ' range--mist' : '')} id="range" style={{ backgroundColor: `var(${secBg})`, '--sec': `var(${secBg})` }}>
     <div className="wrap">
-      <div className="head"><Label n="01">The range</Label><Split text="Eleven kinds of board, each priced by size." accent={['priced']} /></div>
+      <div className="head"><Label n="02">Boards</Label><Split text="Boards are our speciality." accent={['speciality.']} /></div>
       <div className="rng">
         <div className="rng__sticky">
           <div className="rng__panel" style={{ backgroundColor: `var(${panelBg})`, '--pk': panelBg === '--deep' ? '#ffffff' : 'var(--deep)' }}>
@@ -189,7 +189,7 @@ export function Range() {
           {showcase.map((s, i) => <RngItem key={s.id} s={s} i={i} a={a} setA={setA} still={still} />)}
         </ol>
       </div>
-      <p className="more"><a className="btn btn--ghost" href="/ecommerce/">See all {products.length} boards in the shop <Arrow /></a></p>
+      <p className="more"><a className="btn btn--ghost" href="/ecommerce/#group/boards">See all {productsIn('boards').length} boards in the shop <Arrow /></a></p>
     </div>
   </section>;
 }
@@ -246,7 +246,7 @@ export function Process() {
   const bar = useTransform(sp, [0, 1], ['0%', '100%']);
   return <section className="process" id="install" ref={ref} style={{ '--dist': `${dist}px` }}>
     <div className="process__stick">
-      <div className="wrap process__head"><Label n="02">How it works</Label><Split text="From first call to a board on the wall." accent={['wall.']} /></div>
+      <div className="wrap process__head"><Label n="03">How it works</Label><Split text="From first call to a board on the wall." accent={['wall.']} /></div>
       <div className="process__viewport">
         <motion.ol className="process__track" ref={track} style={{ x }}>
           {steps.map((s, i) => <PCard key={s[0]} step={s} i={i} x={x} flat={flat} />)}
@@ -269,15 +269,15 @@ export function Rooms() {
   return <section className="expand" id="rooms" ref={ref}>
     <div className="expand__stick">
       <motion.div className="wrap expand__head" style={still ? undefined : { opacity: head, y: headY }}>
-        <span className="label label--light"><b>03</b>Supply and set-up</span>
+        <span className="label label--light"><b>04</b>Supply and set-up</span>
         <h2>From one board to a full classroom.</h2>
-        <p className="lead">Writing boards, notice boards, furniture and laboratory set-ups, supplied and fitted together.</p>
+        <p className="lead">Writing boards, notice boards, furniture, fire safety and sound systems, from one supplier.</p>
       </motion.div>
       <motion.div className="expand__frame" style={still ? undefined : { clipPath: clip }}>
         <motion.div className="expand__in" style={still ? undefined : { scale }}><Slot name="room-1" scene="room" ratio="auto" alt="A classroom with a greenboard and rows of desks" /></motion.div>
         <motion.div className="expand__stats" style={still ? undefined : { opacity: stats, y: statsY }}>
           <div><b><Count to={years} />+</b><span>years making boards</span></div>
-          <div><b><Count to={11} /></b><span>board types</span></div>
+          <div><b><Count to={productsIn('boards').length} /></b><span>board types</span></div>
           <div><b>1</b><span>team from supply to service</span></div>
         </motion.div>
       </motion.div>
@@ -300,7 +300,7 @@ export function PriceIt({ onQuote }) {
   const pick = k => { setId(k); setSi(Math.min(si, byId[k].options.length - 1)); };
   return <section className="section section--paper" id="price">
     <div className="wrap">
-      <div className="head"><Label n="04">Pricing</Label><Split text="Choose a board and see the price." accent={['price.']} /></div>
+      <div className="head"><Label n="05">Pricing</Label><Split text="Choose a board and see the price." accent={['price.']} /></div>
       <Reveal className="calc">
         <div className="calc__controls">
           <fieldset><legend>Board</legend><div className="chips">{priced.map(k => <button key={k} type="button" className={'chipbtn' + (id === k ? ' is-on' : '')} aria-pressed={id === k} onClick={() => pick(k)}>{byId[k].name}</button>)}</div></fieldset>
@@ -319,7 +319,7 @@ export function PriceIt({ onQuote }) {
           <table><caption>Whiteboard and greenboard</caption><thead><tr><th scope="col">Size</th><th scope="col">Price</th></tr></thead>
             <tbody>{byId.whiteboard.options.map(o => <tr key={o.label}><th scope="row">{o.label}</th><td>{formatPrice(o.price)}</td></tr>)}</tbody></table>
           <table><caption>Other boards, from</caption><thead><tr><th scope="col">Board</th><th scope="col">From</th></tr></thead>
-            <tbody>{products.filter(x => !['whiteboard', 'greenboard'].includes(x.id)).map(x => <tr key={x.id}><th scope="row">{x.name}</th><td>{x.options ? formatPrice(startingPrice(x)) : 'On request'}</td></tr>)}</tbody></table>
+            <tbody>{productsIn('boards').filter(x => !['whiteboard', 'greenboard'].includes(x.id)).map(x => <tr key={x.id}><th scope="row">{x.name}</th><td>{x.options ? formatPrice(startingPrice(x)) : 'On request'}</td></tr>)}</tbody></table>
         </div>
       </details>
     </div>
@@ -343,7 +343,7 @@ const clients = [['Adani Group', 'Industrial'], ['Datta Meghe Group', 'Education
 export function About() {
   return <section className="section" id="about">
     <div className="wrap">
-      <Label n="05">About</Label>
+      <Label n="06">About</Label>
       <Statement text="Paradise Enterprise has made boards and school furniture in Nagpur since 2001, and the same family still runs it." strong={['2001', 'Nagpur']} />
       <div className="about">
         <div>
@@ -362,23 +362,25 @@ export function About() {
 
 /* ───────── faq ───────── */
 const faqs = [
-  ['How do I get a price?', 'Use the pricing tool above for most boards, or add boards in the shop and send the quote request. For anything else, use the form below.'],
+  ['How do I get a price?', 'Use the pricing tool above for most boards. For any other product, add it to your quote cart in the shop and send the request, or use the form below.'],
   ['Do you fit the boards?', 'Yes. Supply and installation come from the same team, and we are on call for service afterwards.'],
   ['Can you make a size that is not listed?', 'Tell us the wall size in the quote form and we will confirm the board and the price.'],
-  ['What else do you supply besides boards?', 'School furniture, digital panels, stands, podiums, first aid and suggestion boxes, fire systems and laboratory set-ups.'],
+  ['What else do you supply besides boards?', 'Board stands, school and office furniture including podiums, fire safety equipment and sound systems.'],
+  ['Do you supply furniture and fire safety equipment?', 'Yes. Desk benches, office tables, bookcases, chairs and podiums, plus fire extinguishers, fire balls, cylinders and fire buckets. Tell us the quantity and we send a quote.'],
+  ['Can I get a sound system from you?', 'Yes. We supply amplifiers, speakers and cordless mics. Tell us about the hall or room in your quote request.'],
   ['Where are you based?', 'We work from Nagpur, Maharashtra, and supply institutions across the region.'],
 ];
 export function Faq() {
   return <section className="section section--paper" id="faq">
     <div className="wrap faq">
-      <div><Label n="06">FAQ</Label><Split text="Questions we hear often." accent={['often.']} /></div>
+      <div><Label n="07">FAQ</Label><Split text="Questions we hear often." accent={['often.']} /></div>
       <Reveal delay={.1}>{faqs.map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}</Reveal>
     </div>
   </section>;
 }
 
 /* ───────── quote ───────── */
-const categories = ['Writing Boards', 'Notice Boards', 'School Furniture', 'First Aid / Suggestion / Complaint Boxes', 'Stands (Tripod / Four Leg)', 'Digital Panels', 'Fire Systems', 'Chemistry / Biology Lab Setup', 'Mic / Podium', 'Accessories', 'General Inquiry'];
+const categories = [...groups.map(g => g.quote), 'First Aid / Suggestion / Complaint Boxes', 'Chemistry / Biology Lab Setup', 'Accessories', 'General Inquiry'];
 export function Quote({ prefill }) {
   const [status, setStatus] = useState(''); const [category, setCategory] = useState(''); const [message, setMessage] = useState('');
   useEffect(() => { if (!prefill) return; setMessage(prefill.text); setCategory(prefill.category); }, [prefill]);
@@ -392,7 +394,7 @@ export function Quote({ prefill }) {
   return <section className="section" id="contact">
     <div className="wrap cols">
       <div>
-        <Label n="07">Contact</Label>
+        <Label n="08">Contact</Label>
         <Split text="Request a quote." accent={['quote.']} />
         <p className="lead">Tell us what you need and the size of the space. We reply with a price and a delivery date.</p>
         <dl className="contact">
@@ -409,7 +411,7 @@ export function Quote({ prefill }) {
           </div>
           <label>Email<input name="email" type="email" autoComplete="email" required maxLength={200} /></label>
           <label>What do you need<select value={category} onChange={e => setCategory(e.target.value)} required><option value="" disabled>Choose one</option>{categories.map(c => <option key={c}>{c}</option>)}</select></label>
-          <label>Message<textarea rows="4" required maxLength={3000} value={message} onChange={e => setMessage(e.target.value)} placeholder="Size of the wall, number of rooms, where it is going" /></label>
+          <label>Message<textarea rows="4" required maxLength={3000} value={message} onChange={e => setMessage(e.target.value)} placeholder="What you need, how many, sizes and where it is going" /></label>
           <button className="btn btn--primary" type="submit">Request a quote <Arrow /></button>
           <p className="form__note" role="status">{status || 'This opens your email app with the enquiry ready to send.'}</p>
         </form>
@@ -422,7 +424,8 @@ export function Quote({ prefill }) {
 export function Footer() {
   return <footer className="footer">
     <div className="wrap footer__grid">
-      <div><a className="logo logo--w" href="#top"><LogoMark tone="paper" /><span className="logo__text"><b>Paradise<em> Enterprise</em></b><small>Est. 2001 · Nagpur</small></span></a><p>Boards and school furniture, made and fitted in Nagpur since 2001.</p></div>
+      <div><a className="logo logo--w" href="#top"><LogoMark tone="paper" /><span className="logo__text"><b>Paradise<em> Enterprise</em></b><small>Est. 2001 · Nagpur</small></span></a><p>Boards, furniture, fire safety and sound for schools and offices. In Nagpur since 2001.</p></div>
+      <nav aria-label="Products"><h4>Products</h4>{groups.map(g => <a key={g.id} className="link" href={`/ecommerce/#group/${g.id}`}>{g.name}</a>)}</nav>
       <nav aria-label="Footer"><h4>Site</h4>{nav.map(([id, label]) => <a key={id} className="link" href={`#${id}`}>{label}</a>)}<a className="link" href="/ecommerce/">Shop</a></nav>
       <div><h4>Contact</h4><a className="link" href="tel:+919922404078">{PHONE_1}</a><a className="link" href="tel:+919822571372">{PHONE_2}</a><a className="link" href={`mailto:${EMAIL}`}>{EMAIL}</a><a className="link" href={INSTAGRAM} target="_blank" rel="noopener noreferrer">Instagram</a></div>
     </div>

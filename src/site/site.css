@@ -708,3 +708,51 @@ a,button,summary,input,select,textarea,.chipbtn{touch-action:manipulation}
 
 @media (max-width:700px){.rng__list>li .btn{font-size:13.5px;padding:0 14px;gap:8px;white-space:nowrap}}
 
+/* what we supply: one tile per product group */
+.supply .head .lead{margin-top:18px}
+.supply__grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:20px}
+.stile{grid-column:span 2;display:flex;flex-direction:column;background:var(--bg);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:border-color .3s,box-shadow .3s}
+.stile:hover{border-color:var(--cool);box-shadow:0 18px 40px -24px rgba(20,60,70,.45)}
+.stile--boards,.stile--furniture{grid-column:span 3}
+.stile__art{position:relative;height:250px;background:color-mix(in srgb,var(--cool) 16%,#fff);overflow:hidden}
+.stile--boards .stile__art,.stile--furniture .stile__art{height:300px}
+.stile__pic{position:absolute;inset:14px 14px 50px;display:grid;place-items:center}
+.stile__pic>svg{position:absolute;inset:0;width:100%;height:100%}
+.stile__pic>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;border-radius:8px}
+.stile__name{position:absolute;left:14px;bottom:12px;display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:99px;background:#fff;font-size:13.5px;font-weight:600;text-decoration:none}
+.stile__name:hover .m-arrow{transform:translateX(4px)}
+.stile__body{flex:1;display:flex;flex-direction:column;gap:12px;padding:22px}
+.stile__body h3{display:flex;align-items:center;gap:10px}
+.stile__body h3 small{font:500 12px/1 var(--mono);padding:5px 8px;border-radius:99px;background:var(--paper)}
+.stile__body p{font-size:15.5px;line-height:1.5;color:var(--muted)}
+.stile__items{display:flex;flex-wrap:wrap;gap:6px}
+.stile__items button{font:500 13.5px/1 var(--font);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:99px;padding:8px 12px;cursor:pointer;transition:background-color .2s,color .2s,border-color .2s}
+.stile__items button:hover{border-color:var(--ink)}
+.stile__items button.is-on{background:var(--ink);border-color:var(--ink);color:#fff}
+.stile__actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:auto;padding-top:10px}
+.footer__grid{grid-template-columns:4fr 2fr 2fr 4fr;gap:48px}
+@media (max-width:1100px){
+  .supply__grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stile,.stile--boards,.stile--furniture{grid-column:auto}
+  .stile--boards{grid-column:1/-1}
+  .stile--furniture .stile__art{height:250px}
+  .footer__grid{grid-template-columns:1fr 1fr 1fr;gap:32px}.footer__grid>div:first-child{grid-column:1/-1}
+}
+@media (max-width:700px){
+  /* swipe carousel */
+  .supply__grid{display:flex;align-items:stretch;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:calc(var(--gut) * -1);padding:2px var(--gut) 6px;scroll-padding-inline:var(--gut)}
+  .supply__grid::-webkit-scrollbar{display:none}
+  .supply__grid>.stile{flex:0 0 84%;scroll-snap-align:start;opacity:1!important;transform:none!important}
+  .stile__art,.stile--boards .stile__art,.stile--furniture .stile__art{height:200px}
+  .stile__body{padding:16px;gap:10px}
+  .stile__body p{font-size:14.5px}
+  .stile__items{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px;overscroll-behavior-x:contain}
+  .stile__items::-webkit-scrollbar{display:none}
+  .stile__items li{flex:none}
+  .stile__items button{min-height:40px;font-size:13px;white-space:nowrap}
+  .stile__actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .stile__actions .btn{width:100%;padding:0 8px;font-size:13.5px;gap:6px}
+  .stile__actions .m-arrow{display:none}
+  .footer__grid{grid-template-columns:1fr 1fr;gap:26px 18px}.footer__grid>div:last-child{grid-column:1/-1}
+}
+@media (max-width:340px){.footer__grid{grid-template-columns:1fr}}

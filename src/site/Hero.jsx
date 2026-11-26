@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
 import { Arrow, Count, DotField, Split, ease, useStill, cssVar } from './motion';
+import { groups, products } from '../../ecommerce/src/products';
 
 const inks = [['--accent', 'Blue marker'], ['--cool', 'Green marker']];
 
@@ -82,12 +83,12 @@ export default function Hero() {
     <DotField tone="light" />
     <div className="wrap hero__grid">
       <motion.div className="hero__copy" style={still ? undefined : { y: copyY }}>
-        <motion.span className="label" {...up(0)}><i /> Boards and institutional furniture · Nagpur</motion.span>
-        <Split as="h1" onLoad accent={['made']} delay={.15} text="Classroom boards and furniture, made in Nagpur." />
-        <motion.p className="lead" {...up(1)}>Whiteboards, greenboards, notice boards and school furniture, made, fitted and serviced by one team for schools, colleges and offices.</motion.p>
+        <motion.span className="label" {...up(0)}><i /> School and office supplies · Nagpur</motion.span>
+        <Split as="h1" onLoad accent={['more']} delay={.15} text="Boards and much more for schools and offices." />
+        <motion.p className="lead" {...up(1)}>Boards, stands, furniture, fire safety equipment and sound systems from one team in Nagpur.</motion.p>
         <motion.div className="btn-row" {...up(2)}>
           <a className="btn btn--light" href="#contact">Request a quote <Arrow /></a>
-          <a className="btn btn--ghost" href="#price">Price a board</a>
+          <a className="btn btn--ghost" href="#products">See products</a>
         </motion.div>
       </motion.div>
       <motion.div className="wall" onPointerMove={onMove} onPointerLeave={onLeave} style={still ? undefined : { y: wallY }}>
@@ -95,14 +96,14 @@ export default function Hero() {
         <motion.div className="wall__b" style={still ? undefined : { x: bx, y: by }} {...pop(.6, { y: 60 })}><ChalkBoard /></motion.div>
         <motion.div className="wall__c" style={still ? undefined : { x: cx, y: cy }} {...pop(.8, { y: 70 })}><NoticeBoard /></motion.div>
         <motion.span className="wchip wchip--a" style={still ? undefined : { x: bx }}>Fitted on site</motion.span>
-        <motion.span className="wchip wchip--b" style={still ? undefined : { x: cx }}>11 board types</motion.span>
+        <motion.span className="wchip wchip--b" style={still ? undefined : { x: cx }}>{products.length} products</motion.span>
       </motion.div>
     </div>
     <motion.dl className="wrap specs" {...up(3)}>
       <div><dt>Established</dt><dd>2001</dd></div>
-      <div><dt>Years making boards</dt><dd><Count to={years} />+</dd></div>
-      <div><dt>Board types</dt><dd><Count to={11} /></dd></div>
-      <div><dt>Supply, fitting, service</dt><dd>1 team</dd></div>
+      <div><dt>Years in business</dt><dd><Count to={years} />+</dd></div>
+      <div><dt>Product ranges</dt><dd><Count to={groups.length} /></dd></div>
+      <div><dt>Supply and service</dt><dd>1 team</dd></div>
     </motion.dl>
   </section>;
 }

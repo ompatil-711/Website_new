@@ -1,8 +1,10 @@
 import { useId } from 'react';
+import ItemVisual from './ItemVisual';
 
 export default function BoardVisual({ product, className = '' }) {
   const uid = useId().replaceAll(':', '');
   const type = product.visual;
+  if (product.group && product.group !== 'boards') return <ItemVisual product={product} className={className} />;
   const dark = ['green', 'black', 'digital'].includes(type);
   const fill = type === 'green' ? '#155847' : type === 'black' ? '#243333' : type === 'digital' ? '#142759' : type === 'pin' ? '#c8d8e4' : '#fff';
   const ink = dark ? '#f7f5e7' : '#2b6777';

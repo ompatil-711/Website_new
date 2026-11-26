@@ -3,9 +3,9 @@ import { useStill } from './motion';
 import Lenis from 'lenis';
 import Hero from './Hero';
 import { Header, MobileBar, Marquee, Range, Process, Rooms, PriceIt, About, Faq, Quote, Footer } from './sections';
+import Supply from './Supply';
+import { groupById } from '../../ecommerce/src/products';
 import './site.css';
-
-const categoryFor = p => p.id === 'digital' ? 'Digital Panels' : p.category === 'Writing boards' ? 'Writing Boards' : 'Notice Boards';
 
 export default function Site() {
   const [prefill, setPrefill] = useState(null); const still = useStill();
@@ -19,13 +19,13 @@ export default function Site() {
     return () => { cancelAnimationFrame(raf); lenis.destroy(); delete window.__lenis; };
   }, [still]);
   const quote = (text, product) => {
-    setPrefill({ text, category: categoryFor(product) });
+    setPrefill({ text, category: groupById[product.group].quote });
     const t = document.getElementById('contact');
     window.__lenis ? window.__lenis.scrollTo(t, { offset: -84 }) : t?.scrollIntoView({ behavior: 'smooth' });
   };
   return <>
     <Header />
-    <main id="main"><Hero /><Marquee /><Range /><Process /><Rooms /><PriceIt onQuote={quote} /><About /><Faq /><Quote prefill={prefill} /></main>
+    <main id="main"><Hero /><Marquee /><Supply onQuote={quote} /><Range /><Process /><Rooms /><PriceIt onQuote={quote} /><About /><Faq /><Quote prefill={prefill} /></main>
     <Footer />
     <MobileBar />
   </>;
